@@ -6,8 +6,11 @@ protected class Grid{
     List<List<Tile>> content;
 
     private Grid(int cols, int rows){
+        content = new ArrayList<ArrayList<Tile>>();
         for (int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
 
+            }
         }
     }
 
