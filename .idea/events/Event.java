@@ -2,6 +2,6 @@ package events;
 
 public class Event{
     public Event(){
-        boolean paused = false;
+        boolean paused = true;
     }
 }
