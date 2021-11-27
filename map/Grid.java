@@ -1,12 +1,13 @@
 package map;
+import java.util.*;
 
-protected class Grid{
+public class Grid{
     private int rowsCount;
     private int colcount;
-    List<List<Tile>> content;
+    ArrayList<ArrayList<Tile>> content = new ArrayList<ArrayList<Tile>>();
 
     private Grid(int cols, int rows){
-        content = new ArrayList<ArrayList<Tile>>();
+        List<Tile> tileList = new ArrayList<Tile>();
         for (int i = 0; i < rows; i++){
             for(int j = 0; j < cols; j++){
 

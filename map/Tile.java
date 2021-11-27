@@ -1,16 +1,17 @@
 package map;
-import objects;
+import objects.*;
+import java.util.*;
 
-protected class Tile{
+public class Tile{
     int xCoordinate;
     int yCoordinate;
     boolean enterable;
     boolean visited;
-    List<Content> contents;
+    ArrayList<Content> contents = new ArrayList<Content>();
 
-    private Tile(int xCoordinate, int yCoordinate, List<Content> contents){
+    private Tile(int xCoordinate, int yCoordinate, ArrayList<Content> contents){
         this.xCoordinate = xCoordinate;
-        this. yCoordinate = yCoordinate;
+        this.yCoordinate = yCoordinate;
         this.contents = contents;
     }
 }
