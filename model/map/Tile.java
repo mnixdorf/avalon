@@ -1,5 +1,5 @@
-package map;
-import objects.*;
+package model.map;
+import model.objects.*;
 import java.util.*;
 
 public class Tile{

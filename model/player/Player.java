@@ -1,5 +1,5 @@
-package player;
-import objects.*;
+package model.player;
+import model.objects.*;
 
 import java.util.*;
 
