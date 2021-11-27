@@ -1,9 +1,10 @@
 package control;
-import model.*;
+import javafx.fxml.FXML;
 import model.game.*;
 
 public class MainMenuControl {
-    public static void launchGame(){
+    @FXML
+    private void launchGame(){
         System.out.println("Button clicked");
     }
 }
