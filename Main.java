@@ -9,10 +9,13 @@ import java.net.URL;
 
 public class Main extends Application {
     private static final String TITLE = "Avalon";
+    private AnchorPane root;
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         URL path = getClass().getResource("/views/mainMenu.fxml");
-        AnchorPane root = FXMLLoader.load(path);
+        root = FXMLLoader.load(path);
         Scene scene = new Scene(root,800, 600);
         primaryStage.setTitle(TITLE);
         primaryStage.setScene(scene);

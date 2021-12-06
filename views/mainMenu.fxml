@@ -34,7 +34,7 @@
             </Text>
          </center>
          <bottom>
-            <Button id="btnStart" mnemonicParsing="false" onMouseClicked="#launchGame" text="Start your adventure!" BorderPane.alignment="CENTER">
+            <Button fx:id="btnStart" id="btnStart" mnemonicParsing="false" onMouseClicked="#launchGame" text="Start your adventure!" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets bottom="40.0" />
                </BorderPane.margin>
