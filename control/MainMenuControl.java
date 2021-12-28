@@ -9,7 +9,12 @@ import javafx.fxml.FXML;
 import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -21,19 +26,13 @@ public class MainMenuControl{
     @FXML
     private Button btnStart;
     private PerspectiveCamera camera;
+    private Box area;
+    private Box playerPlaceholder;
     private long timeLastMoved = System.currentTimeMillis();
     private long currentTime;
 
     @FXML
     private void launchGame() throws Exception {
-        //Stage stage = (Stage) btnStart.getScene().getWindow();
-        //System.out.println("Button clicked");
-        //URL path = getClass().getResource("/views/Launched.fxml");
-        //Parent root = FXMLLoader.load(path);
-        //Scene scene = new Scene(root ,800, 600);
-        //stage.setScene(scene);
-        //stage.show();
-
         Stage primaryStage = (Stage) btnStart.getScene().getWindow();
         primaryStage.setResizable(false);
         Scene scene = new Scene(initRectCamera());
@@ -46,6 +45,7 @@ public class MainMenuControl{
             }
         });
 
+        //TODO smoother animation
         //TODO set rotation with mouse
         /*Transitions for camera/character movement
         * Uses Transitions (while key is being held) for camera-movement limited by a 500ms window for each interaction*/
@@ -56,54 +56,84 @@ public class MainMenuControl{
             @Override
             public void handle(KeyEvent event) {
                 currentTime = System.currentTimeMillis();
-                System.out.println("Last: " + timeLastMoved + " ||| Cur: " + currentTime);
                 if(currentTime - timeLastMoved > ANIMATION_DURATION){
                     switch (event.getCode()) {
                         case ESCAPE: Platform.exit();
                             break;
                         case W:
-                            TranslateTransition upTransition = new TranslateTransition(Duration.millis(ANIMATION_DURATION), camera);
-                            //System.out.println("KEY STROKE RECOGNIZED: w");
-                            //camera.setTranslateZ(camera.getTranslateZ() + 1);
-                            upTransition.setByZ(MOVE);
-                            upTransition.play();
-
+                            TranslateTransition upTransitionCamera = new TranslateTransition(Duration.millis(ANIMATION_DURATION), camera);
+                            TranslateTransition upTransitionPlayer = new TranslateTransition(Duration.millis(ANIMATION_DURATION), playerPlaceholder);
+                            upTransitionCamera.setByZ(MOVE);
+                            upTransitionPlayer.setByZ(MOVE);
+                            upTransitionCamera.play();
+                            upTransitionPlayer.play();
                             break;
                         case A:
-                            TranslateTransition leftTansition = new TranslateTransition(Duration.millis(ANIMATION_DURATION), camera);
-                            //System.out.println("KEY STROKE RECOGNIZED: a");
-                            //camera.setTranslateX(camera.getTranslateX() - 1);
-                            leftTansition.setByX(-MOVE);
-                            leftTansition.play();
+                            TranslateTransition leftTransitionCamera = new TranslateTransition(Duration.millis(ANIMATION_DURATION), camera);
+                            TranslateTransition leftTansitionPlayer = new TranslateTransition(Duration.millis(ANIMATION_DURATION), playerPlaceholder);
+                            leftTransitionCamera.setByX(-MOVE);
+                            leftTansitionPlayer.setByX(-MOVE);
+                            leftTansitionPlayer.play();
+                            leftTransitionCamera.play();
                             break;
                         case S:
-                            TranslateTransition downTransition = new TranslateTransition(Duration.millis(ANIMATION_DURATION), camera);
-                            //System.out.println("KEY STROKE RECOGNIZED: s");
-                            //camera.setTranslateZ(camera.getTranslateZ() - 1);
-                            downTransition.setByZ(-MOVE);
-                            downTransition.play();
+                            TranslateTransition downTransitionCamera = new TranslateTransition(Duration.millis(ANIMATION_DURATION), camera);
+                            TranslateTransition downTransitionPlayer = new TranslateTransition(Duration.millis(ANIMATION_DURATION), playerPlaceholder);
+                            downTransitionCamera.setByZ(-MOVE);
+                            downTransitionPlayer.setByZ(-MOVE);
+                            downTransitionCamera.play();
+                            downTransitionPlayer.play();
                             break;
                         case D:
-                            TranslateTransition rightTransition = new TranslateTransition(Duration.millis(ANIMATION_DURATION), camera);
-                            //System.out.println("KEY STROKE RECOGNIZED: d");
-                            //camera.setTranslateX(camera.getTranslateX() + 1);
-                            rightTransition.setByX(MOVE);
-                            rightTransition.play();
+                            TranslateTransition rightTransitionCamera = new TranslateTransition(Duration.millis(ANIMATION_DURATION), camera);
+                            TranslateTransition rightTransitionPlayer = new TranslateTransition(Duration.millis(ANIMATION_DURATION), playerPlaceholder);
+                            rightTransitionPlayer.setByX(MOVE);
+                            rightTransitionCamera.setByX(MOVE);
+                            rightTransitionCamera.play();
+                            rightTransitionPlayer.play();
                             break;
                         case Q:
                             RotateTransition rotateLeftTransition = new RotateTransition(Duration.millis(ANIMATION_DURATION), camera);
                             rotateLeftTransition.setAxis(camera.getRotationAxis());
                             rotateLeftTransition.setByAngle(-ROTATION_ANGLE);
                             rotateLeftTransition.play();
+                            break;
                         case E:
                             RotateTransition rotateRightTransition = new RotateTransition(Duration.millis(ANIMATION_DURATION), camera);
                             rotateRightTransition.setAxis(camera.getRotationAxis());
                             rotateRightTransition.setByAngle(ROTATION_ANGLE);
                             rotateRightTransition.play();
+                            break;
+                        case F:
+                            //TODO interact
+                            break;
                         default:
+                            break;
                     }
                     timeLastMoved = System.currentTimeMillis();
-                    System.out.println("Camera Layout:" + camera.getBoundsInParent());
+                }
+            }
+        });
+
+        //Event handler for zooming in and out using the mousewheel
+        //TODO correct zooming when camera is rotated
+        scene.setOnScroll(new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent scrollEvent) {
+                currentTime = System.currentTimeMillis();
+                if(currentTime - timeLastMoved > ANIMATION_DURATION) {
+                    double deltaY = scrollEvent.getDeltaY();
+                    System.out.println(deltaY);
+                    if (deltaY < 0) {
+                        TranslateTransition zoomOut = new TranslateTransition(Duration.millis(500), camera);
+                        zoomOut.setByZ(-MOVE);
+                        zoomOut.play();
+                    } else {
+                        TranslateTransition zoomIn = new TranslateTransition(Duration.millis(500), camera);
+                        zoomIn.setByZ(MOVE);
+                        zoomIn.play();
+                    }
+                    timeLastMoved = System.currentTimeMillis();
                 }
             }
         });
@@ -113,15 +143,19 @@ public class MainMenuControl{
     }
 
     public Parent initRectCamera() {
-        Box area = new Box(5, 0, 5);
+        area = new Box(5, 0, 5);
+        playerPlaceholder = new Box(0.5, 0.5, 0.5);
         area.setDrawMode(DrawMode.FILL);
+        playerPlaceholder.setMaterial(new PhongMaterial(Color.RED));
+        playerPlaceholder.setDrawMode(DrawMode.FILL);
         camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll (
                 new Rotate(-20, Rotate.X_AXIS),
                 new Translate(0, 0, -15));
         camera.setRotationAxis(Rotate.Y_AXIS);
+        playerPlaceholder.getTransforms().add(new Translate(0, 0, 0));
         Group root = new Group();
-        root.getChildren().addAll(camera, area);
+        root.getChildren().addAll(camera, area, playerPlaceholder);
         SubScene subScene = new SubScene(root, 1280,1024);
         subScene.setCamera(camera);
         Group group = new Group();
