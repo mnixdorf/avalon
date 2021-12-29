@@ -3,15 +3,36 @@ import model.objects.*;
 import java.util.*;
 
 public class Tile{
-    int xCoordinate;
-    int yCoordinate;
-    boolean enterable;
-    boolean visited;
-    ArrayList<Content> contents = new ArrayList<Content>();
+    private int xCoordinate;
+    private int yCoordinate;
+    private boolean enterable;
+    private boolean visited;
+    private ArrayList<Content> contents = new ArrayList<Content>();
 
-    private Tile(int xCoordinate, int yCoordinate, ArrayList<Content> contents){
+    public int getxCoordinate(){
+        return xCoordinate;
+    }
+
+    public int getyCoordinate() {
+        return yCoordinate;
+    }
+
+    public boolean isEnterable() {
+        return enterable;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public ArrayList<Content> getContents() {
+        return contents;
+    }
+
+    public Tile(int xCoordinate, int yCoordinate, ArrayList<Content> contents){
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
         this.contents = contents;
+        //TODO enterable and walkable
     }
 }

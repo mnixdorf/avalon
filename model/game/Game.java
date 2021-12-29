@@ -9,8 +9,17 @@ public class Game {
 
     public Game(){
         System.out.println("Init");
-
        //TODO new model.game launch
+        map = new Grid(100, 100);
+        player = new Player();
+    }
+
+    public Grid getMap() {
+        return map;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public Game(String save){

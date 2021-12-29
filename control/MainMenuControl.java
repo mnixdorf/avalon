@@ -21,21 +21,65 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.game.*;
+import model.map.Grid;
+
+import java.util.ArrayList;
 
 public class MainMenuControl{
     @FXML
     private Button btnStart;
     private PerspectiveCamera camera;
+    private Node[] areas;
     private Box area;
     private Box playerPlaceholder;
     private long timeLastMoved = System.currentTimeMillis();
     private long currentTime;
 
+    //creates the rectangles representing the grid, the player and the camera
+    //TODO grid
+    public Parent initRectCamera(Grid map) {
+        System.out.println("Cols: " + map.getColcount());
+        areas = new Box[map.getColcount() * map.getRowsCount()];
+        int count = 0;
+        for(int i = 0; i < map.getColcount(); i++){
+            for(int j = 0; j < map.getRowsCount(); j++){
+                Box b = new Box(1, 0 , 1);
+                b.getTransforms().add(new Translate(i,0.25,j));
+                b.setDrawMode(DrawMode.LINE);
+                areas[count] = b;
+                System.out.println(areas.length);
+                count++;
+            }
+        }
+        System.out.println(areas.length);
+        area = new Box(1, 0, 1);
+        playerPlaceholder = new Box(0.5, 0.5, 0.5); //width x, height y, depth z
+        area.setDrawMode(DrawMode.FILL);
+        area.getTransforms().add(new Translate(0,0.25,0));
+        playerPlaceholder.setMaterial(new PhongMaterial(Color.RED));
+        playerPlaceholder.setDrawMode(DrawMode.FILL);
+        camera = new PerspectiveCamera(true);
+        camera.getTransforms().addAll (
+                new Rotate(-20, Rotate.X_AXIS),
+                new Translate(0, 0, -15));
+        camera.setRotationAxis(Rotate.Y_AXIS);
+        //playerPlaceholder.getTransforms().add(new Translate(0, 0, 0));
+        Group root = new Group();
+        root.getChildren().addAll(camera, area, playerPlaceholder);
+        root.getChildren().addAll(areas);
+        SubScene subScene = new SubScene(root, 1280,1024);
+        subScene.setCamera(camera);
+        Group group = new Group();
+        group.getChildren().add(subScene);
+        return group;
+    }
+
     @FXML
     private void launchGame() throws Exception {
         Stage primaryStage = (Stage) btnStart.getScene().getWindow();
+        Game game = new Game();
         primaryStage.setResizable(false);
-        Scene scene = new Scene(initRectCamera());
+        Scene scene = new Scene(initRectCamera(game.getMap()));
 
         //Key press events on scene
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -137,29 +181,7 @@ public class MainMenuControl{
                 }
             }
         });
-
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    public Parent initRectCamera() {
-        area = new Box(5, 0, 5);
-        playerPlaceholder = new Box(0.5, 0.5, 0.5);
-        area.setDrawMode(DrawMode.FILL);
-        playerPlaceholder.setMaterial(new PhongMaterial(Color.RED));
-        playerPlaceholder.setDrawMode(DrawMode.FILL);
-        camera = new PerspectiveCamera(true);
-        camera.getTransforms().addAll (
-                new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -15));
-        camera.setRotationAxis(Rotate.Y_AXIS);
-        playerPlaceholder.getTransforms().add(new Translate(0, 0, 0));
-        Group root = new Group();
-        root.getChildren().addAll(camera, area, playerPlaceholder);
-        SubScene subScene = new SubScene(root, 1280,1024);
-        subScene.setCamera(camera);
-        Group group = new Group();
-        group.getChildren().add(subScene);
-        return group;
     }
 }
