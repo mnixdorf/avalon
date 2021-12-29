@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.game.*;
 import model.map.Grid;
+import model.objects.Terrain;
 
 import java.util.ArrayList;
 
@@ -36,18 +37,38 @@ public class MainMenuControl{
     private long currentTime;
 
     //creates the rectangles representing the grid, the player and the camera
-    //TODO grid
+    //TODO pointlight
     public Parent initRectCamera(Grid map) {
-        System.out.println("Cols: " + map.getColcount());
+        //System.out.println("Cols: " + map.getColcount());
+        PhongMaterial green = new PhongMaterial(Color.GREEN);
+        AmbientLight ambientLight = new AmbientLight(); //white light to improve visibility
         areas = new Box[map.getColcount() * map.getRowsCount()];
         int count = 0;
         for(int i = 0; i < map.getColcount(); i++){
             for(int j = 0; j < map.getRowsCount(); j++){
                 Box b = new Box(1, 0 , 1);
                 b.getTransforms().add(new Translate(i,0.25,j));
-                b.setDrawMode(DrawMode.LINE);
+                b.setDrawMode(DrawMode.FILL);
+                if(map.getContent().get(i).get(j).getContents().get(0) instanceof Terrain){
+                    System.out.println(((Terrain) map.getContent().get(i).get(j).getContents().get(0)).getType());
+                    switch (((Terrain) map.getContent().get(i).get(j).getContents().get(0)).getType()){
+                        case "grass":
+                            b.setMaterial(green);
+                            break;
+                        case "rock":
+                            b.setMaterial(new PhongMaterial(Color.FIREBRICK));
+                            break;
+                        case "water":
+                            b.setMaterial(new PhongMaterial(Color.BLUE));
+                            break;
+                        case "forest":
+                            b.setMaterial(new PhongMaterial(Color.DARKGREEN));
+                            break;
+                        default:
+                    }
+                }
                 areas[count] = b;
-                System.out.println(areas.length);
+                //System.out.println(areas.length);
                 count++;
             }
         }
@@ -65,7 +86,7 @@ public class MainMenuControl{
         camera.setRotationAxis(Rotate.Y_AXIS);
         //playerPlaceholder.getTransforms().add(new Translate(0, 0, 0));
         Group root = new Group();
-        root.getChildren().addAll(camera, area, playerPlaceholder);
+        root.getChildren().addAll(camera, area, playerPlaceholder, ambientLight);
         root.getChildren().addAll(areas);
         SubScene subScene = new SubScene(root, 1280,1024);
         subScene.setCamera(camera);
@@ -167,7 +188,7 @@ public class MainMenuControl{
                 currentTime = System.currentTimeMillis();
                 if(currentTime - timeLastMoved > ANIMATION_DURATION) {
                     double deltaY = scrollEvent.getDeltaY();
-                    System.out.println(deltaY);
+                    //System.out.println(deltaY);
                     if (deltaY < 0) {
                         TranslateTransition zoomOut = new TranslateTransition(Duration.millis(500), camera);
                         zoomOut.setByZ(-MOVE);

@@ -1,5 +1,6 @@
 package model.map;
 import model.objects.Content;
+import model.objects.Terrain;
 
 import java.sql.Array;
 import java.util.*;
@@ -31,11 +32,13 @@ public class Grid{
             ArrayList<Tile> tileList = new ArrayList<Tile>();
             for(int j = 0; j < cols; j++){
                 ArrayList<Content> contents = new ArrayList<>();
+                contents.add(generateTerrain());
                 tileList.add(new Tile(i, j, contents));
             }
             //System.out.println("GridCreate:" + tileList);
             this.content.add(tileList);
             //System.out.println("GridCreate:" + content);
+            generateTerrain();
         }
     }
 
@@ -44,5 +47,30 @@ public class Grid{
         this.rowsCount = grid.getRowsCount();
         this.colcount = grid.getColcount();
         this.content = grid.getContent();
+    }
+    
+    //TODO create patches of land, forest and rocks + bodies of water and lakes
+    private Terrain generateTerrain(){
+        Random random = new Random();
+        int rng = random.nextInt(4);
+        String terrain;
+        switch(rng){
+            case 0:
+                terrain = "grass";
+                break;
+            case 1:
+                terrain = "rock";
+                break;
+            case 2:
+                terrain = "water";
+                break;
+            case 3:
+                terrain = "forest";
+                break;
+            default:
+                terrain = "grass";
+        }
+        Terrain type = new Terrain(rng, terrain);
+        return type;
     }
 }

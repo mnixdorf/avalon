@@ -10,7 +10,15 @@ import java.net.URL;
 public class Main extends Application {
     private static final String TITLE = "Avalon";
     private AnchorPane root;
+    private long id = 0;
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
