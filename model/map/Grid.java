@@ -25,13 +25,17 @@ public class Grid{
     //TODO add contents
     //initialization for new games
     public Grid(int cols, int rows){
+        this.rowsCount = rows;
+        this.colcount = cols;
         for (int i = 0; i < rows; i++){
             ArrayList<Tile> tileList = new ArrayList<Tile>();
             for(int j = 0; j < cols; j++){
-                ArrayList<Content> contents = new ArrayList<>(0);
+                ArrayList<Content> contents = new ArrayList<>();
                 tileList.add(new Tile(i, j, contents));
             }
+            //System.out.println("GridCreate:" + tileList);
             this.content.add(tileList);
+            //System.out.println("GridCreate:" + content);
         }
     }
 
