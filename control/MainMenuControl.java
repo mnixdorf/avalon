@@ -13,9 +13,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -23,6 +21,7 @@ import javafx.util.Duration;
 import model.game.*;
 import model.map.Grid;
 import model.objects.Terrain;
+import model.objects.Tree;
 
 import java.util.ArrayList;
 
@@ -40,6 +39,16 @@ public class MainMenuControl{
     //TODO pointlight
     public Parent initRectCamera(Grid map) {
         //System.out.println("Cols: " + map.getColcount());
+
+        //Create Tree Object
+        TriangleMesh treeMesh = new TriangleMesh();
+        Tree tree = new Tree(0);
+        treeMesh.getPoints().setAll(tree.getPoints());
+        treeMesh.getTexCoords().setAll(tree.getTexCoords());
+        treeMesh.getFaces().setAll(tree.getFaces());
+        MeshView treeMeshView = new MeshView(treeMesh);
+        treeMeshView.setMaterial(new PhongMaterial(Color.BURLYWOOD));
+        treeMeshView.getTransforms().add(new Rotate(180));
         PhongMaterial green = new PhongMaterial(Color.GREEN);
         AmbientLight ambientLight = new AmbientLight(); //white light to improve visibility
         areas = new Box[map.getColcount() * map.getRowsCount()];
@@ -49,7 +58,7 @@ public class MainMenuControl{
                 Box b = new Box(1, 0 , 1);
                 b.getTransforms().add(new Translate(i,0.25,j));
                 b.setDrawMode(DrawMode.FILL);
-                if(map.getContent().get(i).get(j).getContents().get(0) instanceof Terrain){
+                if(map.getContent().get(i).get(j).getContents().get(0) instanceof Terrain){ //checks terrain type
                     System.out.println(((Terrain) map.getContent().get(i).get(j).getContents().get(0)).getType());
                     switch (((Terrain) map.getContent().get(i).get(j).getContents().get(0)).getType()){
                         case "grass":
@@ -78,16 +87,18 @@ public class MainMenuControl{
         area.setDrawMode(DrawMode.FILL);
         area.getTransforms().add(new Translate(0,0.25,0));
         playerPlaceholder.setMaterial(new PhongMaterial(Color.RED));
+        playerPlaceholder.setCullFace(CullFace.BACK);
         playerPlaceholder.setDrawMode(DrawMode.FILL);
         camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll (
-                new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -15));
+                new Rotate(-30, Rotate.X_AXIS),
+                new Translate(0, 0, -10));
         camera.setRotationAxis(Rotate.Y_AXIS);
+        camera.setFieldOfView(30);
         //playerPlaceholder.getTransforms().add(new Translate(0, 0, 0));
         Group root = new Group();
-        root.getChildren().addAll(camera, area, playerPlaceholder, ambientLight);
         root.getChildren().addAll(areas);
+        root.getChildren().addAll(camera, playerPlaceholder, ambientLight, treeMeshView);
         SubScene subScene = new SubScene(root, 1280,1024);
         subScene.setCamera(camera);
         Group group = new Group();
@@ -180,21 +191,24 @@ public class MainMenuControl{
             }
         });
 
-        //Event handler for zooming in and out using the mousewheel
+        //Event handler for zooming in and out using the mousewheel including constraints
         //TODO correct zooming when camera is rotated
         scene.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
             public void handle(ScrollEvent scrollEvent) {
                 currentTime = System.currentTimeMillis();
                 if(currentTime - timeLastMoved > ANIMATION_DURATION) {
+                    System.out.println(camera.getTranslateY());
                     double deltaY = scrollEvent.getDeltaY();
                     //System.out.println(deltaY);
-                    if (deltaY < 0) {
+                    if (deltaY < 0 && camera.getTranslateY() > -5) {
                         TranslateTransition zoomOut = new TranslateTransition(Duration.millis(500), camera);
+                        zoomOut.setByY(-MOVE);
                         zoomOut.setByZ(-MOVE);
                         zoomOut.play();
-                    } else {
+                    } else if(deltaY > 0 && camera.getTranslateY() < 0) {
                         TranslateTransition zoomIn = new TranslateTransition(Duration.millis(500), camera);
+                        zoomIn.setByY(MOVE);
                         zoomIn.setByZ(MOVE);
                         zoomIn.play();
                     }
